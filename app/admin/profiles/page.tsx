@@ -249,8 +249,8 @@ export default function ProfilesPage({
   return (
     <>
       <PageHeader
-        title="Profiles"
-        description="All user profiles. Read-only."
+        title="Users"
+        description="All users, from the profiles table. Read-only."
       />
       <Suspense fallback={<p className="text-sm text-zinc-500">Loading…</p>}>
         <ProfilesContent searchParams={searchParams} />

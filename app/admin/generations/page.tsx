@@ -15,6 +15,7 @@ import {
 import GenerationCard, {
   type GenerationItem,
 } from "@/components/admin/generations/GenerationCard";
+import { one } from "@/lib/admin/rows";
 
 const PAGE_SIZE = 25;
 
@@ -26,6 +27,8 @@ type GenerationRow = {
   generation_prompt: string | null;
   source_image_url: string | null;
   created_at: string;
+  generation_request_id: string | null;
+  llm_models: { display_name: string } | { display_name: string }[] | null;
   votes: { vote_value: number }[] | null;
 };
 
@@ -61,7 +64,7 @@ async function GenerationsContent({
   let query = supabase
     .from("generations")
     .select(
-      "id, user_id, generated_text, user_prompt, generation_prompt, source_image_url, created_at, votes(vote_value)",
+      "id, user_id, generated_text, user_prompt, generation_prompt, source_image_url, created_at, generation_request_id, llm_models(display_name), votes(vote_value)",
       { count: "exact" },
     );
   if (filters.user) query = query.eq("user_id", filters.user);
@@ -118,6 +121,8 @@ async function GenerationsContent({
       generationPrompt: r.generation_prompt,
       imageUrl: r.source_image_url || null,
       createdAt: r.created_at,
+      modelName: one(r.llm_models)?.display_name ?? null,
+      requestId: r.generation_request_id,
       upvotes: votes.filter((v) => v.vote_value > 0).length,
       downvotes: votes.filter((v) => v.vote_value < 0).length,
     };
@@ -199,8 +204,8 @@ export default function GenerationsPage({
     <>
       <div className="flex flex-wrap items-start justify-between gap-3">
         <PageHeader
-          title="Generations"
-          description="All generated memes with their vote totals. Superadmins can edit text and prompts."
+          title="Generated media"
+          description="All AI-generated memes (the generations table): source image, generated caption and vote totals. Superadmins can edit text and prompts."
         />
         <Link
           href="/admin/generations/new"

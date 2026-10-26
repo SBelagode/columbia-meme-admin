@@ -22,6 +22,9 @@ export type GenerationItem = {
   generationPrompt: string | null;
   imageUrl: string | null;
   createdAt: string;
+  /** Set for generations recorded through the new request pipeline. */
+  modelName: string | null;
+  requestId: string | null;
   upvotes: number;
   downvotes: number;
 };
@@ -116,6 +119,25 @@ export default function GenerationCard({ g }: { g: GenerationItem }) {
                 {g.generationPrompt || "—"}
               </dd>
             </div>
+            {(g.modelName || g.requestId) && (
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+                {g.modelName && (
+                  <span>
+                    <span className="text-zinc-500 dark:text-zinc-400">Model </span>
+                    {g.modelName}
+                  </span>
+                )}
+                {g.requestId && (
+                  <Link
+                    href={buildHref("/admin/llm-responses", { request: g.requestId })}
+                    className="underline-offset-2 hover:underline"
+                  >
+                    <span className="text-zinc-500 dark:text-zinc-400">Request </span>
+                    <span className="font-mono">{shortId(g.requestId)}</span> →
+                  </Link>
+                )}
+              </div>
+            )}
             <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
               <span>
                 <span className="text-zinc-500 dark:text-zinc-400">Generation ID </span>

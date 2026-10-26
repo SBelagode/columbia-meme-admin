@@ -104,8 +104,8 @@ const GENERATION_FAILED_MESSAGE = "Generation failed. Please try again.";
 const BLOCKED_MESSAGE = "Gemini couldn't caption that image. Try a different one.";
 const SAVE_FAILED_MESSAGE = "The caption couldn't be saved. Please try again.";
 
-// Best effort, as in the consumer app. meme-images currently has no DELETE
-// policy, so this is expected to fail and leave an orphaned (harmless) object.
+// Best effort, as in the consumer app. The superadmin DELETE policy on
+// meme-images lets this succeed; a failure only leaves a harmless orphan.
 async function discardUpload(supabase: SupabaseClient, path: string) {
   const { error } = await supabase.storage.from(MEME_BUCKET).remove([path]);
   if (error) console.error("[admin/generations] cleanup of unused upload failed:", error.message);
@@ -200,8 +200,8 @@ function deletedRedirectPath(raw: string | null): string {
 // Deletes the generation row only. Associated votes are expected to be
 // removed by the database (votes.generation_id ... ON DELETE CASCADE); they
 // are never deleted here. The Storage image is intentionally left in place:
-// there is no superadmin Storage DELETE policy, and other generations may
-// reuse the same source_image_url.
+// other generations (and the images table) may reference the same file.
+// Files are deleted from /admin/images instead.
 export async function deleteGeneration(
   _prev: DeleteGenerationState,
   formData: FormData,

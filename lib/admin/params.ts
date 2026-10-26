@@ -19,6 +19,11 @@ export function parseUserIdParam(value: string | string[] | undefined): string |
   return UUID_PATTERN.test(v) ? v : null;
 }
 
+/** Any UUID row ID (the new admin tables use UUID keys), or null. */
+export function parseUuidParam(value: string | string[] | undefined): string | null {
+  return parseUserIdParam(value);
+}
+
 /** A bigint row ID (generations.id, votes.id) from the URL, or null. */
 export function parseBigintIdParam(value: string | string[] | undefined): string | null {
   const v = firstParam(value).trim();
