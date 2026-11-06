@@ -10,22 +10,21 @@ function isActive(pathname: string, href: string) {
     : pathname === href || pathname.startsWith(`${href}/`);
 }
 
-// Grouped vertical list on desktop; one horizontally scrolling row on mobile
-// (group headings hidden).
-export default function AdminNav() {
+// Grouped vertical list, shown in the sidebar on desktop and the drawer on mobile.
+export default function AdminNav({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
 
   return (
     <nav aria-label="Admin">
-      <ul className="flex gap-1 overflow-x-auto md:flex-col md:gap-3">
+      <ul className="flex flex-col gap-3">
         {ADMIN_NAV_GROUPS.map((group) => (
-          <li key={group.label ?? "main"} className="contents md:block">
+          <li key={group.label ?? "main"}>
             {group.label && (
-              <p className="hidden px-3 pb-1 text-[11px] font-medium tracking-wide text-zinc-400 uppercase md:block dark:text-zinc-500">
+              <p className="px-3 pb-1 text-[11px] font-medium tracking-wide text-zinc-400 uppercase dark:text-zinc-500">
                 {group.label}
               </p>
             )}
-            <ul className="contents md:flex md:flex-col md:gap-0.5">
+            <ul className="flex flex-col gap-0.5">
               {group.items.map(({ href, label }) => {
                 const active = isActive(pathname, href);
                 return (
@@ -33,6 +32,7 @@ export default function AdminNav() {
                     <Link
                       href={href}
                       aria-current={active ? "page" : undefined}
+                      onNavigate={onNavigate}
                       className={`block whitespace-nowrap rounded px-3 py-1.5 text-sm ${
                         active
                           ? "bg-zinc-200 font-medium text-zinc-900 dark:bg-zinc-800 dark:text-zinc-50"
